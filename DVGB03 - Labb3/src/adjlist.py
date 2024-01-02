@@ -458,14 +458,9 @@ class Edge:
             return []
         return [(src, self.get_head().get_dst(), self.get_weight())] + self.get_tail().list(src)
 
-if __name__ == "__main__":
-    log.critical("module contains no main method")
-    sys.exit(1)
-
-    ###
-    #HelpFunctions
-    ###
-    
+###
+#Help Functions
+###   
     def create_adjacency_matrix(self,matrix,index,currNode):
         
         if not currNode.is_empty():
@@ -505,9 +500,7 @@ if __name__ == "__main__":
             head = head.get_tail()
         return nodesList
     def get_list_of_edges(self):
-        '''
-        **Help function**
-        
+        '''        
         returns a list of all edges from a node
         '''
         edgesList = []
@@ -515,4 +508,20 @@ if __name__ == "__main__":
         while not head.is_empty():
             edgesList.append(head)
             head = head.get_tail()
-        return edgesList  
+        return edgesList 
+
+    def get_node(self,name):
+        '''
+        Returns a node if wanted node is a member
+        '''
+        if self.get_head().is_empty():
+            return 0
+        elif self.get_head().get_name() == name:
+            return self.get_head()
+        else:
+            return self.get_tail().get_node(name)
+
+if __name__ == "__main__":
+    log.critical("module contains no main method")
+    sys.exit(1)
+
