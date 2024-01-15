@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-
-#
-# Recommended order to get started:
-# 1) AdjacencyList.{add_node,node_cardinality}
-# 2) AdjacencyList._add_edge, Edge.add - note: if you run in debug mode, you
-# will get all edges printed when selecting 'v: view' in the menu.
-# 3) AdjacencyList.find_edge, Edge.find
-#
+#Sammarbetade med Samuel Håkans Persson, men lämnat in separata laborationer
 
 import sys
 import logging
@@ -295,8 +288,33 @@ class AdjacencyList:
         index = 0
         
         return self.create_adjacency_matrix(matrix,index,self.get_head())
-          
+   
+    def create_adjacency_matrix(self,matrix,index,currNode):
+        
+        if not currNode.is_empty():
+            currEdge = currNode.get_edges()
+            numberOfEdges = currNode.edge_cardinality()
+            for i in range(numberOfEdges):
+                if not currEdge.is_empty():
+                    dstIndex = self.get_index(currEdge.get_dst())
+                    matrix[index][dstIndex] = currEdge.get_head().get_weight()
+                    currEdge = currEdge.get_tail()
+            return self.create_adjacency_matrix(matrix,index + 1,currNode.get_tail())
+        return matrix
+    
+    def get_index(self,dst):
 
+        '''
+        Return the index of the wanted dst
+
+        pre: node exists
+        '''
+        
+        if dst == self.get_name():
+            return 0
+        else:
+            return self.get_tail().get_index(dst) + 1
+     
     def list_nodes(self):
         '''
         Returns a list of node names in lexicographical order.
@@ -307,6 +325,17 @@ class AdjacencyList:
             head = head.get_tail()
         return node_names
 
+    def get_node(self,name):
+        '''
+        Returns a node if wanted node is a member
+        '''
+        if self.get_head().is_empty():
+            return 0
+        elif self.get_head().get_name() == name:
+            return self.get_head()
+        else:
+            return self.get_tail().get_node(name)
+
     def list_edges(self):
         '''
         Returns a list of edges in lexicographical order.
@@ -315,6 +344,31 @@ class AdjacencyList:
             return []
         return self.get_head().get_edges().list(self.get_head().get_name()) +\
             self.get_tail().list_edges()
+    
+    def get_list_of_nodes(self):
+        '''
+        **Help function**
+        
+        returns a list of all nodes
+        '''
+        nodesList = []
+        head = self.get_head()
+        while not head.is_empty():
+            nodesList.append(head.get_head())
+            head = head.get_tail()
+        return nodesList
+    
+    def get_list_of_edges(self):
+        '''        
+        returns a list of all edges from a node
+        '''
+        edgesList = []
+        head = self.get_head().get_edges()
+        while not head.is_empty():
+            edgesList.append(head)
+            head = head.get_tail()
+        return edgesList 
+    
 
 class Edge:
     '''
@@ -461,65 +515,7 @@ class Edge:
 ###
 #Help Functions
 ###   
-    def create_adjacency_matrix(self,matrix,index,currNode):
-        
-        if not currNode.is_empty():
-            currEdge = currNode.get_edges()
-            numberOfEdges = currNode.edge_cardinality()
-            for i in range(numberOfEdges):
-                if not currEdge.is_empty():
-                    dstIndex = self.get_index(currEdge.get_dst())
-                    matrix[index][dstIndex] = currEdge.get_head().get_weight()
-                    currEdge = currEdge.get_tail()
-            return self.create_adjacency_matrix(matrix,index + 1,currNode.get_tail())
-        return matrix
-     
-    def get_index(self,dst):
 
-        '''
-        Return the index of the wanted dst
-
-        pre: node exists
-        '''
-        
-        if dst == self.get_name():
-            return 0
-        else:
-            return self.get_tail().get_index(dst) + 1
-
-    def get_list_of_nodes(self):
-        '''
-        **Help function**
-        
-        returns a list of all nodes
-        '''
-        nodesList = []
-        head = self.get_head()
-        while not head.is_empty():
-            nodesList.append(head)
-            head = head.get_tail()
-        return nodesList
-    def get_list_of_edges(self):
-        '''        
-        returns a list of all edges from a node
-        '''
-        edgesList = []
-        head = self.get_head().get_edges()
-        while not head.is_empty():
-            edgesList.append(head)
-            head = head.get_tail()
-        return edgesList 
-
-    def get_node(self,name):
-        '''
-        Returns a node if wanted node is a member
-        '''
-        if self.get_head().is_empty():
-            return 0
-        elif self.get_head().get_name() == name:
-            return self.get_head()
-        else:
-            return self.get_tail().get_node(name)
 
 if __name__ == "__main__":
     log.critical("module contains no main method")

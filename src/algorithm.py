@@ -76,10 +76,34 @@ def dijkstra(adjlist, start_node):
     d: [ None, 1, 3]
     e: [ None, 'a', 'b' ]
     '''
-    log.info("TODO: dijkstra()")
-    d = []
-    e = []
-    return d, e
+
+    distance_list = [None] * adjlist.node_cardinality()
+    edge_list = [None] * adjlist.node_cardinality()
+
+    tmp_queue = []
+    visited_nodes= []
+
+    initialize_single_source(adjlist,tmp_queue,start_node)
+
+    while len(tmp_queue) > 0:
+        tmp_queue.sort(key=lambda node:node.get_info()[0])
+        element = tmp_queue.pop(0)
+        visited_nodes.append(element)
+
+        for edge in element.get_list_of_edges():
+            currNode = adjlist.get_node(edge.get_dst())
+            relax(currNode,element,edge.get_weight())
+        visited_nodes.sort(key = lambda node: node.get_name())
+
+    for i, node in enumerate(visited_nodes):
+        if node.get_info()[0] == 0:
+            distance_list[i] = None
+            edge_list[i] = None
+        else:
+            distance_list[i] = node.get_info()[0]
+            edge_list[i] = node.get_info()[1]    
+
+    return distance_list, edge_list
 
 def prim(adjlist, start_node):
     '''
@@ -111,29 +135,44 @@ def prim(adjlist, start_node):
     parentList = [None]* adjlist.node_cardinality()
     queue = []
 
-    initialize_single_source(adjlist,start_node,queue)
-    print("is it in order:  ", queue)
+    initialize_single_source(adjlist,queue,start_node)
+    
+    while len(queue) != 0:
+        queue.sort(key = lambda node: node.get_info()[0])
+        element = queue.pop(0)
 
+        for edge in(element.get_list_of_edges()):
+            currNode = adjlist.get_node(edge.get_dst())
+            if currNode in queue and edge.get_weight() < currNode.get_info()[0]:
+                currNode.set_info([edge.get_weight(), element.get_name()])
 
+    for i, node in enumerate(adjlist.get_list_of_nodes()):
+        if node.get_info()[0] == 0:
+            weightList[i] = None
+            parentList[i] = None
+        else:
+            weightList[i] = node.get_info()[0]
+            parentList[i] = node.get_info()[1]
 
     return weightList, parentList
 
 
-def relax (u,v,weight):
+def relax (v,u,weight):
     if v.get_info()[0] > u.get_info()[0] + weight:
         v.set_info([(u.get_info()[0] + weight), u.get_name()])
 
 
-def initialize_single_source(adjlist,first_node,queue):
+def initialize_single_source(adjlist,nodeList,Start):
 
-    queue.extend(adjlist.get_list_of_nodes())
+    nodeList.extend(adjlist.get_list_of_nodes())
 
-    for nodes in queue:
-        if first_node == nodes.get_name():
-            nodes.set_info([0,None])
+    for nodes in nodeList:
+        if Start == nodes.get_name():
+            nodes.set_info([0,None,None])
         else:
-            nodes.set_info([inf,None])
+            nodes.set_info([inf,None,None])
 
 if __name__ == "__main__":
     logging.critical("module contains no main")
     sys.exit(1)
+ 
